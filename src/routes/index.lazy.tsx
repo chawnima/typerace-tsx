@@ -1,5 +1,6 @@
 import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { generateSlug } from "random-word-slugs";
 
 export const Route = createLazyFileRoute("/")({
   component: Index,
@@ -33,7 +34,7 @@ function Index() {
   const [gameInput, setGameInput] = useState<string>("");
   const [gameInputArray, setGameInputArray] = useState<string[]>([]);
   const [gameText, setGameText] = useState<TextProps[]>(
-    new Text("Hello warudo").getText
+    new Text(generateSlug(5, { format: "lower" })).getText
   );
   const [currentWordIndex, setCurrentWordIndex] = useState<number>(0);
 
@@ -42,11 +43,7 @@ function Index() {
   }, [gameInput]);
 
   const inputChangeHandler = (value: string) => {
-    setGameInput(value.replace(" ", ""));
-  };
-
-  const nextWordHandler = (key: string) => {
-    if (key === " " && currentWordIndex < gameText.length) {
+    if (value.includes(" ") && currentWordIndex < gameText.length) {
       const updateTextStatus = gameText;
       updateTextStatus[currentWordIndex].isFilled = true;
       if (
@@ -55,16 +52,25 @@ function Index() {
       ) {
         updateTextStatus[currentWordIndex].isCorrect = true;
       } else updateTextStatus[currentWordIndex].isCorrect = false;
-      setCurrentWordIndex(currentWordIndex + 1);
+
+      if (currentWordIndex + 1 >= gameText.length) {
+        setGameText(new Text(generateSlug(5, { format: "lower" })).getText);
+        setCurrentWordIndex(0);
+      } else {
+        setCurrentWordIndex(currentWordIndex + 1);
+      }
       setGameInput("");
+    } else {
+      setGameInput(value);
     }
   };
+
   return (
     <div className="p-2 w-full max-w-5xl mx-auto flex flex-col justify-center">
       {/* game and leaderboard */}
-      <div className="flex h-96">
-        <div className="w-1/3 flex flex-col h-full items-center justify-center gap-8">
-          <p className="text-xl">
+      <div className="flex flex-col lg:flex-row h-96">
+        <div className="w-full lg:w-1/3 flex flex-col h-full items-center justify-center gap-8">
+          <p className="text-xl text-center text-nowrap">
             {gameText.map((textArray: TextProps, wordIndex: number) => (
               <span key={wordIndex}>
                 {" "}
@@ -81,18 +87,17 @@ function Index() {
               </span>
             ))}
           </p>
-          <div className="flex w-fit">
+          <div className="w-auto">
             <input
               type="text"
               value={gameInput}
               placeholder="Copy text from above"
               onChange={(e) => inputChangeHandler(e.target.value)}
-              onKeyDown={(e) => nextWordHandler(e.key)}
-              className="text-center py-2 px-4 w-fit focus:outline-none border-b"
+              className="text-center py-2 px-4 focus:outline-none border-b"
             />
           </div>
         </div>
-        <div className="w-2/3">
+        <div className="w-full lg:w-2/3">
           <h1 className="text-center text-xl border-b">Leaderboard</h1>
         </div>
       </div>
