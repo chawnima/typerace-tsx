@@ -1,6 +1,7 @@
 import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { generateSlug } from "random-word-slugs";
+import Countdown from "react-countdown";
 
 export const Route = createLazyFileRoute("/")({
   component: Index,
@@ -10,6 +11,13 @@ interface TextProps {
   text: string[];
   isFilled?: boolean;
   isCorrect?: boolean;
+}
+
+interface CountdownProps {
+  hours?: number;
+  minutes: number;
+  seconds: number;
+  completed: boolean;
 }
 
 class Text {
@@ -33,10 +41,12 @@ function Index() {
   const navigate = useNavigate();
   const [gameInput, setGameInput] = useState<string>("");
   const [gameInputArray, setGameInputArray] = useState<string[]>([]);
+  const [gameStart, setGameStart] = useState<boolean>(false);
   const [gameText, setGameText] = useState<TextProps[]>(
     new Text(generateSlug(5, { format: "lower" })).getText
   );
   const [currentWordIndex, setCurrentWordIndex] = useState<number>(0);
+  const [showTimeOptions, setShowTimeOptions] = useState<boolean>(false);
 
   useEffect(() => {
     setGameInputArray(gameInput.toLocaleLowerCase().split(""));
@@ -65,12 +75,25 @@ function Index() {
     }
   };
 
+  // Renderer callback with condition
+  const renderer = ({ minutes, seconds, completed }: CountdownProps) => {
+    if (completed) {
+      return <></>;
+    } else {
+      return (
+        <span>
+          {minutes}:{seconds <= 9 ? "0" + seconds : seconds}
+        </span>
+      );
+    }
+  };
+
   return (
     <div className="p-2 w-full max-w-5xl mx-auto flex flex-col justify-center">
       {/* game and leaderboard */}
       <div className="flex flex-col lg:flex-row h-96">
-        <div className="w-full lg:w-1/3 flex flex-col h-full items-center justify-center gap-8">
-          <p className="text-xl text-center text-nowrap">
+        <div className="w-full lg:w-2/3 flex flex-col h-full items-center justify-center gap-8">
+          <p className="text-xl text-center text-wrap">
             {gameText.map((textArray: TextProps, wordIndex: number) => (
               <span key={wordIndex}>
                 {" "}
@@ -87,7 +110,7 @@ function Index() {
               </span>
             ))}
           </p>
-          <div className="w-auto">
+          <div className="w-auto flex items-center gap-4">
             <input
               type="text"
               value={gameInput}
@@ -95,9 +118,34 @@ function Index() {
               onChange={(e) => inputChangeHandler(e.target.value)}
               className="text-center py-2 px-4 focus:outline-none border-b"
             />
+            {gameStart ? (
+              <Countdown date={Date.now() + 1000000} renderer={renderer} />
+            ) : (
+              <div className="relative">
+                <button
+                  className={`text-center py-2 px-4 bg-neutral-700 cursor-pointer rounded-t-lg ${showTimeOptions ? "rounded-b-none" : "rounded-b-lg"}`}
+                  onClick={() => setShowTimeOptions(!showTimeOptions)}
+                >
+                  Time
+                </button>
+                {showTimeOptions && (
+                  <div className="absolute w-full bg-neutral-700 flex flex-col">
+                    <button className="py-1 hover:bg-neutral-800/60 active:bg-neutral-800/80 border-neutral-400">
+                      1m
+                    </button>
+                    <button className="py-1 hover:bg-neutral-800/60 active:bg-neutral-800/80 border-neutral-400">
+                      2m
+                    </button>
+                    <button className="py-1 hover:bg-neutral-800/60 active:bg-neutral-800/80 border-neutral-400">
+                      3m
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
-        <div className="w-full lg:w-2/3">
+        <div className="w-full lg:w-1/3">
           <h1 className="text-center text-xl border-b">Leaderboard</h1>
         </div>
       </div>
