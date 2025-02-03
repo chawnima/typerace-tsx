@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { generateSlug } from "random-word-slugs";
 import Countdown from "react-countdown";
 
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import { GameText } from "./ui/GameUi";
+import { GameText, GameInput } from "./ui/GameUi";
+import { Dropdown } from "./ui/Dropdown";
 
 interface TextProps {
   text: string[];
@@ -35,7 +35,18 @@ class Text {
   }
 }
 
-const gameTimeOptions: number[] = [60, 120, 180];
+class GameStats {
+  constructor(
+    public wordCorrect: number,
+    public wordMissed: number,
+    public keystrokes: number,
+    public keystrokesMissed: number,
+    public wpm:number
+  ) {
+  }
+}
+
+const gameTimeOptions: number[] = [10, 120, 180];
 
 const Game = () => {
   const [gameInput, setGameInput] = useState<string>("");
@@ -43,11 +54,11 @@ const Game = () => {
   const [gameTime, setGameTime] = useState<number>(60);
   const [gameStart, setGameStart] = useState<boolean>(false);
   const [gameOver, setGameOver] = useState<boolean>(false);
+  const [gameStatistic,setGameStatistic] = useState<GameStats>(new GameStats(0,0,0,0,0));
   const [gameText, setGameText] = useState<TextProps[]>(
     new Text(generateSlug(5, { format: "lower" })).getText
   );
   const [currentWordIndex, setCurrentWordIndex] = useState<number>(0);
-  const [showTimeOptions, setShowTimeOptions] = useState<boolean>(false);
   const [initialTime, setInitialTime] = useState<number>(
     Date.now() + gameTime * 1000
   );
@@ -60,16 +71,18 @@ const Game = () => {
     if (!gameStart) {
       setGameStart(true);
     }
+    //moving into next word
     if (value.includes(" ") && currentWordIndex < gameText.length) {
       const updateTextStatus = gameText;
       updateTextStatus[currentWordIndex].isFilled = true;
+      //word checker
       if (
         gameInput.toLocaleLowerCase() ===
         gameText[currentWordIndex].text.join("").toLocaleLowerCase()
       ) {
         updateTextStatus[currentWordIndex].isCorrect = true;
       } else updateTextStatus[currentWordIndex].isCorrect = false;
-
+      //moving to next word
       if (currentWordIndex + 1 >= gameText.length) {
         setGameText(new Text(generateSlug(5, { format: "lower" })).getText);
         setCurrentWordIndex(0);
@@ -79,6 +92,11 @@ const Game = () => {
       setGameInput("");
     } else {
       setGameInput(value);
+      if(gameInput.length < value.length){
+        gameStatistic.keystrokes++;
+      }else{
+        gameStatistic.keystrokesMissed++;
+      }
     }
   };
 
@@ -93,7 +111,7 @@ const Game = () => {
   const renderer = ({ minutes, seconds, completed }: CountdownProps) => {
     if (completed) {
       setGameOver(true);
-      return <></>;
+      gameStatistic.wpm = Math.round(gameStatistic.keystrokes / 5 / (gameTime / 60));
     } else {
       return (
         <span>
@@ -103,47 +121,56 @@ const Game = () => {
     }
   };
 
+  const dropdownHandler = (selectedItem: number | string): void => {
+    if (typeof selectedItem === "number") setGameTime(selectedItem);
+  };
+
   return (
     <div className="w-full lg:w-2/3 flex flex-col h-full items-center justify-center gap-8">
-      <GameText gameText={gameText} currentWordIndex={currentWordIndex} gameInputArray={gameInputArray} />
-      <div className="w-auto flex items-center gap-4">
-        <input
-          type="text"
-          value={gameInput}
-          placeholder="Copy text from above"
-          onChange={(e) => inputChangeHandler(e.target.value)}
-          className="text-center py-2 px-4 focus:outline-none border-b"
-        />
-        {gameStart ? (
-          <Countdown date={initialTime} renderer={renderer} />
-        ) : (
-          <div className="relative">
-            <button
-              className={`text-center py-2 px-4 bg-neutral-700 cursor-pointer rounded-t-lg ${showTimeOptions ? "rounded-b-none" : "rounded-b-lg"} flex items-center justify-center w-20`}
-              onClick={() => setShowTimeOptions(!showTimeOptions)}
-            >
-              <span>{gameTime}s</span>
-              <ArrowDropDownIcon />
-            </button>
-            {showTimeOptions && (
-              <div className="absolute w-full bg-neutral-700 flex flex-col">
-                {gameTimeOptions.map((item: number) => (
-                  <button
-                    key={item}
-                    className="py-1 hover:bg-neutral-800/60 active:bg-neutral-800/80 border-neutral-400"
-                    onClick={() => {
-                      setGameTime(item);
-                      setShowTimeOptions(false);
-                    }}
-                  >
-                    {item}s
-                  </button>
-                ))}
-              </div>
+      {gameOver ? (
+        <>
+          <p
+            onClick={() => {
+              setGameOver(false);
+              setGameStart(false);
+              setGameInput("");
+              setGameText(
+                new Text(generateSlug(5, { format: "lower" })).getText
+              );
+              setCurrentWordIndex(0);
+              setInitialTime(Date.now() + gameTime * 1000);
+              setGameStatistic(new GameStats(0,0,0,0,0));
+            }}
+          >
+            Game Over. {gameStatistic.wpm}WPM. Click me to reset
+          </p>{" "}
+          {/*placeholder*/}
+        </>
+      ) : (
+        <>
+          {" "}
+          <GameText
+            gameText={gameText}
+            currentWordIndex={currentWordIndex}
+            gameInputArray={gameInputArray}
+          />
+          <div className="w-auto flex items-center gap-4">
+            <GameInput
+              gameInput={gameInput}
+              inputChangeHandler={inputChangeHandler}
+            />
+            {gameStart ? (
+              <Countdown date={initialTime} renderer={renderer} />
+            ) : (
+              <Dropdown
+                content={`${gameTime}s`}
+                options={gameTimeOptions}
+                setOptions={dropdownHandler}
+              />
             )}
           </div>
-        )}
-      </div>
+        </>
+      )}
     </div>
   );
 };
