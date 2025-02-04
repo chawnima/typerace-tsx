@@ -1,4 +1,4 @@
-import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
+import { createLazyFileRoute } from "@tanstack/react-router";
 import Game from "../components/Game";
 
 export const Route = createLazyFileRoute("/")({
@@ -6,8 +6,6 @@ export const Route = createLazyFileRoute("/")({
 });
 
 function Index() {
-  const navigate = useNavigate();
-
   return (
     <div className="p-2 w-full max-w-5xl mx-auto flex flex-col justify-center">
       {/* game and leaderboard */}

@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { generateSlug } from "random-word-slugs";
 import Countdown from "react-countdown";
 
-import { GameText, GameInput } from "./ui/GameUi";
+import { GameText, GameInput, GameResult } from "./ui/GameUi";
 import { Dropdown } from "./ui/Dropdown";
+import Button from "./ui/Button";
 
 interface TextProps {
   text: string[];
@@ -37,13 +38,14 @@ class Text {
 
 class GameStats {
   constructor(
-    public wordCorrect: number,
-    public wordMissed: number,
-    public keystrokes: number,
-    public keystrokesMissed: number,
-    public wpm:number
-  ) {
-  }
+    public wordCorrect: number = 0,
+    public wordMissed: number = 0,
+    public keystrokes: number = 0,
+    public keystrokesMissed: number = 0,
+    public totalCharacters: number = 0,
+    public wpm: number = 0,
+    public accuracy: number = 0
+  ) {}
 }
 
 const gameTimeOptions: number[] = [10, 120, 180];
@@ -54,7 +56,9 @@ const Game = () => {
   const [gameTime, setGameTime] = useState<number>(60);
   const [gameStart, setGameStart] = useState<boolean>(false);
   const [gameOver, setGameOver] = useState<boolean>(false);
-  const [gameStatistic,setGameStatistic] = useState<GameStats>(new GameStats(0,0,0,0,0));
+  const [gameStatistic, setGameStatistic] = useState<GameStats>(
+    new GameStats(0, 0, 0, 0, 0)
+  );
   const [gameText, setGameText] = useState<TextProps[]>(
     new Text(generateSlug(5, { format: "lower" })).getText
   );
@@ -81,7 +85,12 @@ const Game = () => {
         gameText[currentWordIndex].text.join("").toLocaleLowerCase()
       ) {
         updateTextStatus[currentWordIndex].isCorrect = true;
-      } else updateTextStatus[currentWordIndex].isCorrect = false;
+        gameStatistic.wordCorrect++;
+        gameStatistic.totalCharacters += gameInput.length;
+      } else {
+        updateTextStatus[currentWordIndex].isCorrect = false;
+        gameStatistic.wordMissed++;
+      }
       //moving to next word
       if (currentWordIndex + 1 >= gameText.length) {
         setGameText(new Text(generateSlug(5, { format: "lower" })).getText);
@@ -92,12 +101,23 @@ const Game = () => {
       setGameInput("");
     } else {
       setGameInput(value);
-      if(gameInput.length < value.length){
+      if (gameInput.length < value.length) {
+        // backspace inputted
         gameStatistic.keystrokes++;
-      }else{
+      } else {
         gameStatistic.keystrokesMissed++;
       }
     }
+  };
+
+  const resetGame = () => {
+    setGameOver(false);
+    setGameStart(false);
+    setGameInput("");
+    setGameText(new Text(generateSlug(5, { format: "lower" })).getText);
+    setCurrentWordIndex(0);
+    setInitialTime(Date.now() + gameTime * 1000);
+    setGameStatistic(new GameStats());
   };
 
   // Update when game starts or time changes
@@ -111,7 +131,14 @@ const Game = () => {
   const renderer = ({ minutes, seconds, completed }: CountdownProps) => {
     if (completed) {
       setGameOver(true);
-      gameStatistic.wpm = Math.round(gameStatistic.keystrokes / 5 / (gameTime / 60));
+      gameStatistic.wpm = Math.round(
+        gameStatistic.keystrokes / 5 / (gameTime / 60)
+      );
+      gameStatistic.accuracy = Math.round(
+        (gameStatistic.wordCorrect /
+          (gameStatistic.wordMissed + gameStatistic.wordCorrect)) *
+          100
+      );
     } else {
       return (
         <span>
@@ -129,22 +156,8 @@ const Game = () => {
     <div className="w-full lg:w-2/3 flex flex-col h-full items-center justify-center gap-8">
       {gameOver ? (
         <>
-          <p
-            onClick={() => {
-              setGameOver(false);
-              setGameStart(false);
-              setGameInput("");
-              setGameText(
-                new Text(generateSlug(5, { format: "lower" })).getText
-              );
-              setCurrentWordIndex(0);
-              setInitialTime(Date.now() + gameTime * 1000);
-              setGameStatistic(new GameStats(0,0,0,0,0));
-            }}
-          >
-            Game Over. {gameStatistic.wpm}WPM. Click me to reset
-          </p>{" "}
-          {/*placeholder*/}
+          <GameResult {...gameStatistic} />
+          <Button func={resetGame} text="Reset" />
         </>
       ) : (
         <>
