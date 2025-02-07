@@ -11,6 +11,18 @@ interface gameTextProps {
   currentWordIndex: number;
   gameInputArray: string[];
 }
+interface GameInputProps {
+  gameInput: string;
+  inputChangeHandler: (value: string) => void;
+}
+interface GameResultProps {
+  keystrokes: number;
+  keystrokesMissed: number;
+  wordCorrect: number;
+  wordMissed: number;
+  wpm: number;
+  accuracy:number;
+}
 
 const GameText = ({
   gameText,
@@ -38,20 +50,6 @@ const GameText = ({
   );
 };
 
-interface GameInputProps {
-  gameInput: string;
-  inputChangeHandler: (value: string) => void;
-}
-
-interface GameResultProps {
-  keystrokes: number;
-  keystrokesMissed: number;
-  wordCorrect: number;
-  wordMissed: number;
-  wpm: number;
-  accuracy:number;
-}
-
 const GameInput = ({ gameInput, inputChangeHandler }: GameInputProps) => {
   return (
     <input
@@ -59,7 +57,7 @@ const GameInput = ({ gameInput, inputChangeHandler }: GameInputProps) => {
       value={gameInput}
       placeholder="Copy text from above"
       onChange={(e) => inputChangeHandler(e.target.value)}
-      className="text-center py-2 px-4 focus:outline-none border-b"
+      className="text-center py-2 px-4 focus:outline-none border-b w-full"
     />
   );
 };

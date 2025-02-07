@@ -71,7 +71,7 @@ const Game = () => {
     setGameInputArray(gameInput.toLocaleLowerCase().split(""));
   }, [gameInput]);
 
-  const inputChangeHandler = (value: string) => {
+  const inputChangeHandler = (value: string): void => {
     if (!gameStart) {
       setGameStart(true);
     }
@@ -110,7 +110,7 @@ const Game = () => {
     }
   };
 
-  const resetGame = () => {
+  const resetGame = (): void => {
     setGameOver(false);
     setGameStart(false);
     setGameInput("");
@@ -153,7 +153,7 @@ const Game = () => {
   };
 
   return (
-    <div className="w-full lg:w-2/3 flex flex-col h-full items-center justify-center gap-8">
+    <div className="w-full flex flex-col items-center justify-center gap-8">
       {gameOver ? (
         <>
           <GameResult {...gameStatistic} />
@@ -167,7 +167,7 @@ const Game = () => {
             currentWordIndex={currentWordIndex}
             gameInputArray={gameInputArray}
           />
-          <div className="w-auto flex items-center gap-4">
+          <div className="w-full flex items-center gap-4 px-8">
             <GameInput
               gameInput={gameInput}
               inputChangeHandler={inputChangeHandler}
@@ -188,4 +188,12 @@ const Game = () => {
   );
 };
 
-export default Game;
+const GameTips = () => {
+  return (
+    <ul className="flex flex-col items-start mx-auto lg:mx-0 justify-center text-neutral-400 list-disc">
+      <li>Start typing to start the timer</li>
+      <li>Press space to move to next word</li>
+    </ul>
+  );
+};
+export {Game, GameTips};
