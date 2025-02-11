@@ -1,5 +1,6 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
 import {Game, GameTips} from "../components/Game";
+import { Leaderboard } from "../components/Leaderboard";
 
 export const Route = createLazyFileRoute("/")({
   component: Index,
@@ -15,7 +16,7 @@ function Index() {
           <GameTips />
         </div>
         <div className="w-full lg:w-1/3">
-          <h1 className="text-center text-xl border-b">Leaderboard</h1>
+          <Leaderboard />
         </div>
       </div>
     </div>

@@ -5,6 +5,8 @@ import Countdown from "react-countdown";
 import { GameText, GameInput, GameResult } from "./ui/GameUi";
 import { Dropdown } from "./ui/Dropdown";
 import Button from "./ui/Button";
+import { postSingleRank } from "../services/rank";
+import { useMutation } from "@tanstack/react-query";
 
 interface TextProps {
   text: string[];
@@ -48,7 +50,7 @@ class GameStats {
   ) {}
 }
 
-const gameTimeOptions: number[] = [10, 120, 180];
+const gameTimeOptions: number[] = [60, 120, 180];
 
 const Game = () => {
   const [gameInput, setGameInput] = useState<string>("");
@@ -127,6 +129,19 @@ const Game = () => {
     }
   }, [gameStart, gameTime]);
 
+  const { mutate: createSingleRank } = useMutation({
+    mutationFn: () => postSingleRank("anonymous", gameStatistic.wpm),
+    onSuccess:()=>{
+      console.log("new rank posted")
+    }
+  });
+
+  useEffect(()=>{
+    if (gameOver){createSingleRank();
+      
+    };
+  },[gameOver,createSingleRank])
+
   // Renderer callback with condition
   const renderer = ({ minutes, seconds, completed }: CountdownProps) => {
     if (completed) {
@@ -196,4 +211,4 @@ const GameTips = () => {
     </ul>
   );
 };
-export {Game, GameTips};
+export { Game, GameTips };

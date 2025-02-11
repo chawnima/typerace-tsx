@@ -16,16 +16,9 @@ import { Route as rootRoute } from './routes/__root'
 
 // Create Virtual Routes
 
-const AsuLazyImport = createFileRoute('/asu')()
 const IndexLazyImport = createFileRoute('/')()
 
 // Create/Update Routes
-
-const AsuLazyRoute = AsuLazyImport.update({
-  id: '/asu',
-  path: '/asu',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/asu.lazy').then((d) => d.Route))
 
 const IndexLazyRoute = IndexLazyImport.update({
   id: '/',
@@ -44,13 +37,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexLazyImport
       parentRoute: typeof rootRoute
     }
-    '/asu': {
-      id: '/asu'
-      path: '/asu'
-      fullPath: '/asu'
-      preLoaderRoute: typeof AsuLazyImport
-      parentRoute: typeof rootRoute
-    }
   }
 }
 
@@ -58,37 +44,32 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexLazyRoute
-  '/asu': typeof AsuLazyRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexLazyRoute
-  '/asu': typeof AsuLazyRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexLazyRoute
-  '/asu': typeof AsuLazyRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/asu'
+  fullPaths: '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/asu'
-  id: '__root__' | '/' | '/asu'
+  to: '/'
+  id: '__root__' | '/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexLazyRoute: typeof IndexLazyRoute
-  AsuLazyRoute: typeof AsuLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexLazyRoute: IndexLazyRoute,
-  AsuLazyRoute: AsuLazyRoute,
 }
 
 export const routeTree = rootRoute
@@ -101,15 +82,11 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/",
-        "/asu"
+        "/"
       ]
     },
     "/": {
       "filePath": "index.lazy.tsx"
-    },
-    "/asu": {
-      "filePath": "asu.lazy.tsx"
     }
   }
 }
