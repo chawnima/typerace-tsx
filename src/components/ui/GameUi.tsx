@@ -30,7 +30,7 @@ const GameText = ({
   gameInputArray,
 }: gameTextProps) => {
   return (
-    <p className="text-xl text-center text-wrap">
+    <p className="text-xl text-center text-wrap text-primary">
       {gameText.map((textArray: TextProps, wordIndex: number) => (
         <span key={wordIndex}>
           {" "}

@@ -6,7 +6,7 @@ interface ButtonProps {
 const Button = ({ func, text }: ButtonProps) => {
   return (
     <button
-      className="text-center py-2 px-4 bg-neutral-700 hover:bg-neutral-700/70 active:bg-neutral-700/50 rounded-md cursor-pointer"
+      className="text-center py-2 px-4 bg-background-primary hover:bg-background-primary/70 active:bg-background-primary/50 rounded-md cursor-pointer"
       onClick={() => func()}
     >
       {text}

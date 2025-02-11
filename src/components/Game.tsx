@@ -190,7 +190,7 @@ const Game = () => {
 
 const GameTips = () => {
   return (
-    <ul className="flex flex-col items-start mx-auto lg:mx-0 justify-center text-neutral-400 list-disc">
+    <ul className="flex flex-col items-start mx-auto lg:mx-0 justify-center text-secondary list-disc">
       <li>Start typing to start the timer</li>
       <li>Press space to move to next word</li>
     </ul>
