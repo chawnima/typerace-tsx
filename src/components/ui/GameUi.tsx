@@ -30,7 +30,7 @@ const GameText = ({
   gameInputArray,
 }: gameTextProps) => {
   return (
-    <p className="text-xl text-center text-wrap text-primary">
+    <p className="text-xl text-center text-wrap font-semibold p-2 px-4 rounded-lg">
       {gameText.map((textArray: TextProps, wordIndex: number) => (
         <span key={wordIndex}>
           {" "}
@@ -38,8 +38,8 @@ const GameText = ({
             <span
               key={index}
               className={`
-                    ${currentWordIndex == wordIndex && gameInputArray[index] == text.toLocaleLowerCase() ? "text-green-500" : "text-white"} 
-                    ${textArray?.isFilled ? (textArray?.isCorrect ? "bg-green-600" : "bg-red-500") : ""}`}
+                    ${currentWordIndex == wordIndex && gameInputArray[index] == text.toLocaleLowerCase() ? "text-green-500" : "text-background-primary"} 
+                    ${textArray?.isFilled ? (textArray?.isCorrect ? "bg-green-600 text-white" : "bg-red-500 text-white") : ""}`}
             >
               {text}
             </span>

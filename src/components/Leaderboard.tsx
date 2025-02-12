@@ -11,13 +11,14 @@ export const Leaderboard = () => {
 
   return (
     <div>
-      <h1 className="text-center text-xl">Leaderboard</h1>
+      <h1 className="text-center text-xl font-semibold text-primary">Leaderboard</h1>
       {isPending && <p>Loading...</p>}
-      {isSuccess ? (
-        <Table content={rankList?.data} />
-      ) : (
-        <span>Failed to load rank data</span>
-      )}
+      {!isPending &&
+        (isSuccess ? (
+          <Table content={rankList?.data} />
+        ) : (
+          <span>Failed to load rank data</span>
+        ))}
     </div>
   );
 };

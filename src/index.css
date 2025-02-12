@@ -4,38 +4,30 @@
   --color-primary: rgba(var(--primary));
   --color-secondary: rgba(var(--secondary));
   --color-background-primary: rgba(var(--background-primary));
+  --color-background-secondary: rgba(var(--background-secondary));
+  --color-background-third: rgba(var(--background-third));
 }
 
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: light dark;
-  background-color: #242424;
+  background-color: rgb(255, 255, 255);
+  color:rgb(var(--primary));
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  --background-primary: 64, 64, 64;
-  --primary: 244, 244, 244;
-  --secondary: 161, 161, 161;
+  --background-primary: 240, 160, 75;
+  --background-secondary: 250, 218, 122;
+  --background-third: 177, 194, 158;
+  --primary: 114, 58, 89;
+  --secondary: 159, 82, 85;
 }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-    --background-primary: 64, 64, 64;
-    --primary: 33, 53, 71;
-    --secondary: 161, 161, 161;
-  }
 }
