@@ -1,9 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import logo from "../../assets/logo.png";
 import { TextInput } from "./Input";
+import { changeUsername } from "../../redux/slices/userInfo";
+import { RootState } from "../../redux/store";
 
 const Navbar = () => {
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState(
+    useSelector((state: RootState) => state.userInfo.username || "")
+  );
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(changeUsername(username));
+    localStorage.setItem("username", username);
+  }, [username, dispatch]);
 
   return (
     <div className="w-full h-12 bg-background-primary flex border-b-background-secondary border-b fixed top-0">

@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { generateSlug } from "random-word-slugs";
 import Countdown from "react-countdown";
+import { useMutation } from "@tanstack/react-query";
+import { useSelector } from "react-redux";
 
 import { GameText, GameInput, GameResult } from "./ui/GameUi";
 import { Dropdown } from "./ui/Dropdown";
 import Button from "./ui/Button";
 import { postSingleRank } from "../services/rank";
-import { useMutation } from "@tanstack/react-query";
+import { RootState } from "../redux/store";
 
 interface TextProps {
   text: string[];
@@ -68,6 +70,7 @@ const Game = () => {
   const [initialTime, setInitialTime] = useState<number>(
     Date.now() + gameTime * 1000
   );
+  const username = useSelector((state: RootState) => state.userInfo.username);
 
   useEffect(() => {
     setGameInputArray(gameInput.toLocaleLowerCase().split(""));
@@ -129,8 +132,9 @@ const Game = () => {
     }
   }, [gameStart, gameTime]);
 
+  //post game stats
   const { mutate: createSingleRank } = useMutation({
-    mutationFn: () => postSingleRank("anonymous", gameStatistic.wpm),
+    mutationFn: () => postSingleRank(username || "anonymous", gameStatistic.wpm),
     onSuccess:()=>{
       console.log("new rank posted")
     }
