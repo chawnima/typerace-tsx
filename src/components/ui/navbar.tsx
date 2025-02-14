@@ -5,7 +5,7 @@ import { TextInput } from "./Input";
 import { changeUsername } from "../../redux/slices/userInfo";
 import { RootState } from "../../redux/store";
 
-const Navbar = () => {
+const NavigationBar = () => {
   const [username, setUsername] = useState(
     useSelector((state: RootState) => state.userInfo.username || "")
   );
@@ -36,4 +36,4 @@ const Navbar = () => {
   );
 };
 
-export { Navbar };
+export { NavigationBar };
