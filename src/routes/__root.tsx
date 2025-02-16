@@ -9,7 +9,7 @@ export const Route = createRootRoute({
       <div className="pt-12">
         <Outlet />
       </div>
-      <TanStackRouterDevtools />
+      {import.meta.env.MODE == "development" && <TanStackRouterDevtools />}
     </>
   ),
 });
