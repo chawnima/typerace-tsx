@@ -1,6 +1,7 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
-import {Game, GameTips} from "../components/Game";
+import { Game, GameTips } from "../components/Game";
 import { Leaderboard } from "../components/Leaderboard";
+import MultiplayerTab from "../components/MultiplayerTab";
 
 export const Route = createLazyFileRoute("/")({
   component: Index,
@@ -19,6 +20,8 @@ function Index() {
           <Leaderboard />
         </div>
       </div>
+      {/* menu */}
+      <MultiplayerTab />
     </div>
   );
 }

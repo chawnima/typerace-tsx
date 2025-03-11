@@ -3,6 +3,8 @@ import { generateSlug } from "random-word-slugs";
 import Countdown from "react-countdown";
 import { useMutation } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
+import {io} from "socket.io-client";
+
 
 import { GameText, GameInput, GameResult } from "./ui/GameUi";
 import { Dropdown } from "./ui/Dropdown";
@@ -53,6 +55,7 @@ class GameStats {
 }
 
 const gameTimeOptions: number[] = [60, 120, 180];
+const socket = io("http://localhost:4000");
 
 const Game = () => {
   const [gameInput, setGameInput] = useState<string>("");
@@ -102,7 +105,8 @@ const Game = () => {
         setCurrentWordIndex(0);
       } else {
         setCurrentWordIndex(currentWordIndex + 1);
-      }
+      };
+      socket.emit("message",gameInput);
       setGameInput("");
     } else {
       setGameInput(value);

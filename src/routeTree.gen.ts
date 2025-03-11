@@ -17,6 +17,7 @@ import { Route as rootRoute } from './routes/__root'
 // Create Virtual Routes
 
 const IndexLazyImport = createFileRoute('/')()
+const MultiplayerIdLazyImport = createFileRoute('/multiplayer/$id')()
 
 // Create/Update Routes
 
@@ -25,6 +26,14 @@ const IndexLazyRoute = IndexLazyImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
+
+const MultiplayerIdLazyRoute = MultiplayerIdLazyImport.update({
+  id: '/multiplayer/$id',
+  path: '/multiplayer/$id',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() =>
+  import('./routes/multiplayer/$id.lazy').then((d) => d.Route),
+)
 
 // Populate the FileRoutesByPath interface
 
@@ -37,6 +46,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexLazyImport
       parentRoute: typeof rootRoute
     }
+    '/multiplayer/$id': {
+      id: '/multiplayer/$id'
+      path: '/multiplayer/$id'
+      fullPath: '/multiplayer/$id'
+      preLoaderRoute: typeof MultiplayerIdLazyImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -44,32 +60,37 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexLazyRoute
+  '/multiplayer/$id': typeof MultiplayerIdLazyRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexLazyRoute
+  '/multiplayer/$id': typeof MultiplayerIdLazyRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexLazyRoute
+  '/multiplayer/$id': typeof MultiplayerIdLazyRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/multiplayer/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/multiplayer/$id'
+  id: '__root__' | '/' | '/multiplayer/$id'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexLazyRoute: typeof IndexLazyRoute
+  MultiplayerIdLazyRoute: typeof MultiplayerIdLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexLazyRoute: IndexLazyRoute,
+  MultiplayerIdLazyRoute: MultiplayerIdLazyRoute,
 }
 
 export const routeTree = rootRoute
@@ -82,11 +103,15 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/"
+        "/",
+        "/multiplayer/$id"
       ]
     },
     "/": {
       "filePath": "index.lazy.tsx"
+    },
+    "/multiplayer/$id": {
+      "filePath": "multiplayer/$id.lazy.tsx"
     }
   }
 }
