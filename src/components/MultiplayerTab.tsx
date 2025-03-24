@@ -1,10 +1,34 @@
 import Button from "./ui/Button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PublicIcon from "@mui/icons-material/Public";
 import LockIcon from "@mui/icons-material/Lock";
+import { io } from "socket.io-client";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../redux/store";
+import { useNavigate } from "@tanstack/react-router";
+import { setSocketId } from "../redux/slices/userInfo";
+
+const socket = io("http://localhost:4000", { autoConnect: false });
 
 const MultiplayerTab = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [roomType, setRoomType] = useState<"public" | "private">("public");
+  
+  const username =
+    useSelector((state: RootState) => state.userInfo.username) || "anonymous";
+  useEffect(() => {
+    if (username) {
+      socket.auth = { username };
+      socket.connect();
+    }
+  }, [username]);
+  const createRoomHandler = () => {
+    const id = Math.floor(Math.random() * 9000).toString();
+    socket.emit("room-id", id, "room-master");
+    dispatch(setSocketId(socket.id));
+    navigate({to: `/multiplayer/${id}`})
+  };
 
   return (
     <div className="flex flex-col gap-4">
@@ -34,7 +58,7 @@ const MultiplayerTab = () => {
               </button>
             </div>
           </div>
-          <Button func={() => {}} text="Create Multiplayer Room" />
+          <Button func={() => {createRoomHandler()}} text="Create Multiplayer Room" />
         </div>
       </div>
       <div>

@@ -3,10 +3,12 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 
 export interface UserInfoState {
   username: string;
+  socketId: string | undefined;
 }
 
 const initialState: UserInfoState = {
   username: localStorage.username || "",
+  socketId: undefined,
 };
 
 export const userInfoSlice = createSlice({
@@ -16,9 +18,12 @@ export const userInfoSlice = createSlice({
     changeUsername(state, action: PayloadAction<string>) {
       state.username = action.payload;
     },
+    setSocketId(state, action: PayloadAction<string | undefined>) {
+      state.socketId = action.payload;
+    },
   },
 });
 
-export const { changeUsername } = userInfoSlice.actions;
+export const { changeUsername, setSocketId } = userInfoSlice.actions;
 
 export default userInfoSlice.reducer;
